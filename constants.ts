@@ -26,5 +26,8 @@ export const SHAPE_LABELS: Record<VisualShape, string> = {
   [VisualShape.VOXEL_GRID]: "Digital Voxel",
   [VisualShape.CYBER_FLOWER]: "Neon Lotus",
   [VisualShape.LIQUID_WAVE]: "Sonic Rain",
-  [VisualShape.PULSING_BLACK_HOLE]: "Event Horizon"
+  [VisualShape.PULSING_BLACK_HOLE]: "Event Horizon",
+  [VisualShape.AIZAWA_ATTRACTOR]: "Aizawa Nebula",
+  [VisualShape.THOMAS_ATTRACTOR]: "Thomas Cycler",
+  [VisualShape.CLIFFORD_ATTRACTOR]: "Clifford Field"
 };

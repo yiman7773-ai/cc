@@ -15,7 +15,10 @@ export enum VisualShape {
   VOXEL_GRID = 'VOXEL_GRID',
   CYBER_FLOWER = 'CYBER_FLOWER',
   LIQUID_WAVE = 'LIQUID_WAVE',
-  PULSING_BLACK_HOLE = 'PULSING_BLACK_HOLE'
+  PULSING_BLACK_HOLE = 'PULSING_BLACK_HOLE',
+  AIZAWA_ATTRACTOR = 'AIZAWA_ATTRACTOR',
+  THOMAS_ATTRACTOR = 'THOMAS_ATTRACTOR',
+  CLIFFORD_ATTRACTOR = 'CLIFFORD_ATTRACTOR'
 }
 
 export interface SongMetadata {
@@ -39,6 +42,19 @@ export interface AudioData {
   averageFrequency: number;
 }
 
+export interface GestureState {
+  leftHand: {
+    active: boolean;
+    isFist: boolean; // true = contract, false = explode
+    strength: number; // 0.0 to 1.0 (grip strength or openness)
+  };
+  rightHand: {
+    active: boolean;
+    x: number; // Normalized -1 to 1 (screen space mapped to 3D)
+    y: number; // Normalized -1 to 1
+  };
+}
+
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -50,6 +66,7 @@ declare global {
       h3: React.DetailedHTMLProps<React.HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
       button: React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
       input: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+      video: React.DetailedHTMLProps<React.VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>;
       
       // React Three Fiber Elements
       points: any;

@@ -1,5 +1,7 @@
 {
   "name": "Cosmos Audio Visualizer",
   "description": "A 3D immersive particle music visualizer that uses Gemini AI to generate unique cosmic shapes (Fractals, Lorenz Attractors, Mobius Strips) based on the mood of your local music tracks.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "camera"
+  ]
 }
