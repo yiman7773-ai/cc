@@ -6,8 +6,8 @@ import { useHandTracking } from './hooks/useHandTracking';
 import { analyzeSongMood } from './services/geminiService';
 import VisualizerScene from './components/VisualizerScene';
 import UIOverlay from './components/UIOverlay';
-import { DEFAULT_VISUAL_CONFIG } from './constants';
-import { VisualConfig, VisualShape } from './types';
+import { DEFAULT_VISUAL_CONFIG, DEFAULT_VISUAL_SETTINGS } from './constants';
+import { VisualConfig, VisualShape, VisualSettings } from './types';
 
 const App: React.FC = () => {
   const { 
@@ -25,6 +25,7 @@ const App: React.FC = () => {
   const { videoRef, gestureStateRef, isReady: isHandTrackingReady } = useHandTracking();
 
   const [visualConfig, setVisualConfig] = useState<VisualConfig>(DEFAULT_VISUAL_CONFIG);
+  const [visualSettings, setVisualSettings] = useState<VisualSettings>(DEFAULT_VISUAL_SETTINGS);
   const [isAnalysing, setIsAnalysing] = useState(false);
 
   useEffect(() => {
@@ -72,6 +73,7 @@ const App: React.FC = () => {
           <Suspense fallback={null}>
             <VisualizerScene 
               config={visualConfig} 
+              settings={visualSettings}
               getAudioData={getAudioData} 
               gestureRef={gestureStateRef}
             />
@@ -79,7 +81,7 @@ const App: React.FC = () => {
               <Bloom 
                 luminanceThreshold={0.2} 
                 mipmapBlur 
-                intensity={1.5} 
+                intensity={visualSettings.bloomIntensity} 
                 radius={0.6}
               />
             </EffectComposer>
@@ -104,11 +106,14 @@ const App: React.FC = () => {
              ...visualConfig, 
              description: isAnalysing ? "Consulting the stars..." : visualConfig.description 
         }}
+        visualSettings={visualSettings}
         onUpload={addFiles}
         onPlay={togglePlay}
         onNext={handleNext}
         onPrev={handlePrev}
         onSelectSong={(index) => playSong(index)}
+        onUpdateSettings={setVisualSettings}
+        onUpdateColors={(colors) => setVisualConfig(prev => ({ ...prev, colors }))}
       />
       
     </div>

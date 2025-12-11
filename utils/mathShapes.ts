@@ -47,17 +47,13 @@ export const getShapePositions = (
       }
 
       case VisualShape.LORENZ_ATTRACTOR: {
-        // Integrating Lorenz equations roughly
-        // We use the continuous variables ax, ay, az initialized outside
         const dt = 0.005;
         const sigma = 10;
         const rho = 28;
         const beta = 8 / 3;
         
-        // Restart trace occasionally to create lines
         if (i % 500 === 0) {
             ax = 0.1; ay = 0.1; az = 0.1;
-            // Jump to random start
             ax += (Math.random()-0.5)*10;
         }
 
@@ -230,72 +226,156 @@ export const getShapePositions = (
       }
       
       case VisualShape.AIZAWA_ATTRACTOR: {
-        // Aizawa parameters
         const dt = 0.01;
         const a = 0.95, b = 0.7, c = 0.6, d = 3.5, e = 0.25, f = 0.1;
-        
-        // Restart trace occasionally
-        if (i % 500 === 0) {
-            ax = 0.1; ay = 0; az = 0;
-            ax += (Math.random()-0.5) * 2;
-        }
-        
+        if (i % 500 === 0) { ax = 0.1; ay = 0; az = 0; ax += (Math.random()-0.5) * 2; }
         const dx = (az - b) * ax - d * ay;
         const dy = d * ax + (az - b) * ay;
         const dz = c + a * az - (Math.pow(az, 3) / 3) - (Math.pow(ax, 2) + Math.pow(ay, 2)) * (1 + e * az) + f * az * Math.pow(ax, 3);
-        
-        ax += dx * dt;
-        ay += dy * dt;
-        az += dz * dt;
-        
+        ax += dx * dt; ay += dy * dt; az += dz * dt;
         dummy.set(ax * 15, ay * 15, az * 15);
         break;
       }
       
       case VisualShape.THOMAS_ATTRACTOR: {
-        // Thomas Cyclically Symmetric Attractor
         const b_const = 0.208186;
         const dt = 0.05; 
-        
-        if (i % 1000 === 0) {
-            ax = 0.1; ay = 0.1; az = 0.1;
-            ax += (Math.random() - 0.5) * 2;
-        }
-        
+        if (i % 1000 === 0) { ax = 0.1; ay = 0.1; az = 0.1; ax += (Math.random() - 0.5) * 2; }
         const dx = Math.sin(ay) - b_const * ax;
         const dy = Math.sin(az) - b_const * ay;
         const dz = Math.sin(ax) - b_const * az;
-        
-        ax += dx * dt;
-        ay += dy * dt;
-        az += dz * dt;
-        
+        ax += dx * dt; ay += dy * dt; az += dz * dt;
         dummy.set(ax * 4, ay * 4, az * 4);
         dummy.multiplyScalar(8.0);
         break;
       }
       
       case VisualShape.CLIFFORD_ATTRACTOR: {
-         // Using 3D Halvorsen actually, as Clifford is 2D map. 
-         // Halvorsen is continuous and nice.
          const a_const = 1.4;
          const dt = 0.005;
-         
-         if (i % 500 === 0) {
-            ax = 1; ay = 0; az = 0;
-            ax += (Math.random() - 0.5);
-         }
-         
+         if (i % 500 === 0) { ax = 1; ay = 0; az = 0; ax += (Math.random() - 0.5); }
          const dx = -a_const * ax - 4 * ay - 4 * az - ay * ay;
          const dy = -a_const * ay - 4 * az - 4 * ax - az * az;
          const dz = -a_const * az - 4 * ax - 4 * ay - ax * ax;
-         
-         ax += dx * dt;
-         ay += dy * dt;
-         az += dz * dt;
-         
+         ax += dx * dt; ay += dy * dt; az += dz * dt;
          dummy.set(ax, ay, az);
          dummy.multiplyScalar(6.0);
+         break;
+      }
+
+      // --- NEW SHAPES ---
+
+      case VisualShape.KOCH_SNOWFLAKE: {
+        // Approximate 3D Snowflake Fractal (Mandelbulb-ish or Recursive Tetrahedron)
+        // Here we map a sphere to a snowflake-like distortion
+        const theta = r1 * Math.PI * 2;
+        const phi = r2 * Math.PI;
+        // Create spikes
+        const spikes = 4 + Math.floor(chaosLevel * 4);
+        const rBase = 12;
+        // Spherical Harmonic style distortion to mimic 3D snowflake
+        const harmonic = Math.pow(Math.abs(Math.sin(spikes * theta) * Math.cos(spikes * phi)), 0.5);
+        const r = rBase + (harmonic * 10 * (0.5 + r3));
+        dummy.setFromSphericalCoords(r, phi, theta);
+        break;
+      }
+
+      case VisualShape.ASTROID_ELLIPSOID: {
+        // x = a cos^3 u cos^3 v
+        // y = a sin^3 u cos^3 v
+        // z = a sin^3 v
+        const u = r1 * Math.PI * 2;
+        const v = map(r2, -Math.PI/2, Math.PI/2);
+        const a = 18;
+        
+        const cosU = Math.cos(u); const sinU = Math.sin(u);
+        const cosV = Math.cos(v); const sinV = Math.sin(v);
+        
+        dummy.x = a * Math.pow(cosU, 3) * Math.pow(cosV, 3);
+        dummy.y = a * Math.pow(sinU, 3) * Math.pow(cosV, 3);
+        dummy.z = a * Math.pow(sinV, 3);
+        break;
+      }
+
+      case VisualShape.BUTTERFLY_CURVE: {
+         // Based on Temple H. Fay's butterfly curve, extruded/rotated in 3D
+         const theta = r1 * Math.PI * 12; // Multiple loops
+         // r = e^(sin t) - 2 cos(4t) + sin^5((2t - pi)/24)
+         const term1 = Math.exp(Math.sin(theta));
+         const term2 = 2 * Math.cos(4 * theta);
+         const term3 = Math.pow(Math.sin((2 * theta - Math.PI) / 24), 5);
+         const r = (term1 - term2 + term3) * 3.0;
+         
+         // Convert to 3D by rotating slightly or adding Z depth
+         dummy.x = r * Math.cos(theta);
+         dummy.y = r * Math.sin(theta);
+         dummy.z = map(r2, -5, 5) * (1 + Math.abs(r)*0.1); // Thickness
+         break;
+      }
+
+      case VisualShape.ARCHIMEDEAN_SPIRAL: {
+        // r = a + b * theta
+        // Extruded into a 3D tunnel/spring
+        const loops = 10;
+        const maxTheta = loops * Math.PI * 2;
+        const theta = t * maxTheta;
+        const r = 1 + (0.5 * theta);
+        
+        // Spiral in XY
+        const x = r * Math.cos(theta);
+        const y = r * Math.sin(theta);
+        
+        // Add Tube volume around the line
+        const tubeR = 3;
+        const tubeAngle = r2 * Math.PI * 2;
+        
+        dummy.x = x + Math.cos(tubeAngle) * tubeR;
+        dummy.y = y + Math.sin(tubeAngle) * tubeR;
+        dummy.z = (t * 40) - 20; // Length
+        
+        // Rotate to face camera better
+        dummy.applyAxisAngle(new THREE.Vector3(1,0,0), Math.PI/2);
+        break;
+      }
+
+      case VisualShape.CATENARY_SURFACE: {
+         // Catenoid: Surface of revolution of a catenary
+         // x = c * cosh(v/c) * cos(u)
+         // z = c * cosh(v/c) * sin(u)
+         // y = v
+         const c = 6;
+         const u = r1 * Math.PI * 2;
+         const v = map(r2, -12, 12);
+         
+         const radius = c * Math.cosh(v / c);
+         dummy.x = radius * Math.cos(u);
+         dummy.z = radius * Math.sin(u);
+         dummy.y = v * 2.5;
+         break;
+      }
+
+      case VisualShape.BERNOULLI_LEMNISCATE: {
+         // Lemniscate of Bernoulli extended to 3D ribbon
+         // Parametric: x = a*sqrt(2)*cos(t) / (1 + sin^2(t))
+         // y = a*sqrt(2)*cos(t)sin(t) / (1 + sin^2(t))
+         const theta = r1 * Math.PI * 2;
+         const a = 20;
+         const den = 1 + Math.pow(Math.sin(theta), 2);
+         const x = (a * Math.sqrt(2) * Math.cos(theta)) / den;
+         const y = (a * Math.sqrt(2) * Math.cos(theta) * Math.sin(theta)) / den;
+         
+         dummy.x = x;
+         dummy.y = y;
+         
+         // Add twist/volume
+         const thickness = 2 + Math.abs(x) * 0.1;
+         dummy.z = (r2 - 0.5) * thickness * 4.0;
+         
+         // Twist it
+         const twist = x * 0.1;
+         const z = dummy.z;
+         dummy.z = z * Math.cos(twist) - dummy.y * Math.sin(twist);
+         // dummy.y = z * Math.sin(twist) + dummy.y * Math.cos(twist);
          break;
       }
 

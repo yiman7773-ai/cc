@@ -1,6 +1,6 @@
 import { VisualShape } from './types';
 
-export const PARTICLE_COUNT = 15000;
+export const PARTICLE_COUNT = 40000; // Increased max capacity for "High" setting
 export const ANALYSER_FFT_SIZE = 512; // Must be power of 2
 
 export const DEFAULT_VISUAL_CONFIG = {
@@ -9,6 +9,14 @@ export const DEFAULT_VISUAL_CONFIG = {
   speed: 1.0,
   chaos: 0.5,
   description: "Waiting for music..."
+};
+
+export const DEFAULT_VISUAL_SETTINGS = {
+  particleCount: 15000,
+  particleSize: 1.0,
+  brightness: 1.0,
+  bloomIntensity: 1.5,
+  trailStrength: 0.5, // Controls warp/flow
 };
 
 export const SHAPE_LABELS: Record<VisualShape, string> = {
@@ -29,5 +37,12 @@ export const SHAPE_LABELS: Record<VisualShape, string> = {
   [VisualShape.PULSING_BLACK_HOLE]: "Event Horizon",
   [VisualShape.AIZAWA_ATTRACTOR]: "Aizawa Nebula",
   [VisualShape.THOMAS_ATTRACTOR]: "Thomas Cycler",
-  [VisualShape.CLIFFORD_ATTRACTOR]: "Clifford Field"
+  [VisualShape.CLIFFORD_ATTRACTOR]: "Clifford Field",
+  
+  [VisualShape.KOCH_SNOWFLAKE]: "Koch Fractal",
+  [VisualShape.ASTROID_ELLIPSOID]: "Hyper Star",
+  [VisualShape.BUTTERFLY_CURVE]: "Chaos Butterfly",
+  [VisualShape.ARCHIMEDEAN_SPIRAL]: "Golden Spiral",
+  [VisualShape.CATENARY_SURFACE]: "Catenoid Tube",
+  [VisualShape.BERNOULLI_LEMNISCATE]: "Infinity Ribbon"
 };

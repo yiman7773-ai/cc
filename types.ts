@@ -18,7 +18,15 @@ export enum VisualShape {
   PULSING_BLACK_HOLE = 'PULSING_BLACK_HOLE',
   AIZAWA_ATTRACTOR = 'AIZAWA_ATTRACTOR',
   THOMAS_ATTRACTOR = 'THOMAS_ATTRACTOR',
-  CLIFFORD_ATTRACTOR = 'CLIFFORD_ATTRACTOR'
+  CLIFFORD_ATTRACTOR = 'CLIFFORD_ATTRACTOR',
+  
+  // New Mathematical Shapes
+  KOCH_SNOWFLAKE = 'KOCH_SNOWFLAKE',
+  ASTROID_ELLIPSOID = 'ASTROID_ELLIPSOID',
+  BUTTERFLY_CURVE = 'BUTTERFLY_CURVE',
+  ARCHIMEDEAN_SPIRAL = 'ARCHIMEDEAN_SPIRAL',
+  CATENARY_SURFACE = 'CATENARY_SURFACE',
+  BERNOULLI_LEMNISCATE = 'BERNOULLI_LEMNISCATE'
 }
 
 export interface SongMetadata {
@@ -37,6 +45,14 @@ export interface VisualConfig {
   description: string;
 }
 
+export interface VisualSettings {
+  particleCount: number;
+  particleSize: number;
+  brightness: number;
+  bloomIntensity: number;
+  trailStrength: number;
+}
+
 export interface AudioData {
   frequencyData: Uint8Array;
   averageFrequency: number;
@@ -52,6 +68,7 @@ export interface GestureState {
     active: boolean;
     x: number; // Normalized -1 to 1 (screen space mapped to 3D)
     y: number; // Normalized -1 to 1
+    gesture: 'NONE' | 'TOUCH' | 'RAIN';
   };
 }
 
@@ -67,6 +84,7 @@ declare global {
       button: React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
       input: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
       video: React.DetailedHTMLProps<React.VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>;
+      label: React.DetailedHTMLProps<React.LabelHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>;
       
       // React Three Fiber Elements
       points: any;

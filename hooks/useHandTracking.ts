@@ -6,7 +6,7 @@ export const useHandTracking = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const gestureStateRef = useRef<GestureState>({
     leftHand: { active: false, isFist: false, strength: 0 },
-    rightHand: { active: false, x: 0, y: 0 }
+    rightHand: { active: false, x: 0, y: 0, gesture: 'NONE' }
   });
   const [isReady, setIsReady] = useState(false);
 
@@ -61,7 +61,7 @@ export const useHandTracking = () => {
         // Reset state
         const newState: GestureState = {
           leftHand: { active: false, isFist: false, strength: 0 },
-          rightHand: { active: false, x: 0, y: 0 }
+          rightHand: { active: false, x: 0, y: 0, gesture: 'NONE' }
         };
 
         if (results.landmarks) {
@@ -94,7 +94,7 @@ export const useHandTracking = () => {
                  : Math.min(1, (distance - 0.3) * 2); // Strength of spread
                  
             } else if (handedness === 'Right') {
-              // RIGHT HAND -> INTERACTION (Touch/Ripple)
+              // RIGHT HAND -> INTERACTION (Touch/Ripple OR Rain)
               newState.rightHand.active = true;
               const indexTip = landmarks[8];
               
@@ -102,6 +102,28 @@ export const useHandTracking = () => {
               // Video is typically mirrored in CSS, so X needs inversion if not already
               newState.rightHand.x = (indexTip.x - 0.5) * 2; 
               newState.rightHand.y = -(indexTip.y - 0.5) * 2; // Invert Y for 3D
+
+              // Gesture Detection: Open Palm = RAIN, Point/Other = TOUCH
+              const isFingerExtended = (tipIdx: number, baseIdx: number) => {
+                 const tip = landmarks[tipIdx];
+                 const base = landmarks[baseIdx];
+                 const wrist = landmarks[0];
+                 const dTip = Math.hypot(tip.x - wrist.x, tip.y - wrist.y);
+                 const dBase = Math.hypot(base.x - wrist.x, base.y - wrist.y);
+                 return dTip > dBase * 1.1; 
+              };
+
+              // Check 4 fingers (Index 8, Middle 12, Ring 16, Pinky 20)
+              const indexExt = isFingerExtended(8, 5);
+              const middleExt = isFingerExtended(12, 9);
+              const ringExt = isFingerExtended(16, 13);
+              const pinkyExt = isFingerExtended(20, 17);
+
+              if (indexExt && middleExt && ringExt && pinkyExt) {
+                 newState.rightHand.gesture = 'RAIN';
+              } else {
+                 newState.rightHand.gesture = 'TOUCH';
+              }
             }
           }
         }
